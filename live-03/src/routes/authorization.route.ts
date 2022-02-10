@@ -1,5 +1,5 @@
-import { NextFunction, Response, Request, Router } from "express";
-import ForbiddenError from "../models/errors/forbidden.error.model";
+import { NextFunction, Response, Request, Router } from 'express';
+import ForbiddenError from '../models/errors/forbidden.error.model';
 
 
 const authorizationRoute = Router();
@@ -18,6 +18,14 @@ authorizationRoute.post('/token', (req: Request, res: Response, next: NextFuncti
 
         if(authenticationType !== 'Basic' || !token){
             throw new ForbiddenError('Tipo de autenticação inválida!');
+        }
+
+        const tokenContent = Buffer.from(token, 'base64').toString('utf-8');
+
+        const [username, password] = tokenContent.split(':');
+
+        if(!username || !password){
+            throw new ForbiddenError('Credenciais não preenchidas!');
         }
 
     } catch(error) {
